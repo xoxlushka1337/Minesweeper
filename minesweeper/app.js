@@ -49,8 +49,8 @@ class StartGame {
       field.innerHTML += `<div class="sapper__cells" ></div>`;
     }
 
-    const sapperCells = document.querySelectorAll('.sapper__cells');
-    const cells = [...field.children];
+    this.sapperCells = document.querySelectorAll('.sapper__cells');
+    this.cells = [...field.children];
 
     this.closedCount = this.numberCells;
 
@@ -63,16 +63,16 @@ class StartGame {
         return;
       }
 
-      const index = cells.indexOf(event.target);
-      const column = this.index % this.width;
-      const row = Math.floor(this.index / this.width);
+      this.index = this.cells.indexOf(event.target);
+      this.column = this.index % this.width;
+      this.row = Math.floor(this.index / this.width);
 
       // quantityClick += 1;
 
-      if (isFlagClicked) {
-        const index = row * width + column;
+      if (this.isFlagClicked) {
+        const index = this.row * this.width + this.column;
         flagIndex.push(index);
-        sapperCells[index].textContent = '🚩';
+        this.sapperCells[index].textContent = '🚩';
         numberFlag--;
         isFlagClicked = false;
         flagNumber.innerHTML = numberFlag;
@@ -80,24 +80,118 @@ class StartGame {
         return;
       }
 
-      if (isFirstClick) {
-        isFirstClick = false;
-        bombs = [...Array(numberCells).keys()]
+      if (this.isFirstClick) {
+        this.isFirstClick = false;
+        this.bombs = [...Array(this.numberCells).keys()]
           .sort(() => Math.random() - 0.5)
-          .filter((cell) => cell !== index)
-          .slice(0, bombesCount);
+          .filter((cell) => cell !== this.index)
+          .slice(0, this.bombesCount);
       }
-      if (sapperCells[index].innerHTML === '🚩') {
+      if (this.sapperCells[this.index].innerHTML === '🚩') {
         numberFlag++;
         flagNumber.innerHTML = numberFlag;
-        sapperCells[index].innerHTML = '';
+        this.sapperCells[this.index].innerHTML = '';
       }
 
-      open(row, column);
-      addClassOpen(row, column);
+      this.open(this.row, this.column);
+      this.addClassOpen(this.row, this.column);
     });
+  }
+
+  addClassOpen(row, column) {
+    const index = row * this.width + column;
+    if (this.sapperCells[index].innerHTML === '🚩') {
+      return;
+    }
+    this.sapperCells[index].classList.add('active');
+  }
+
+  isValid(row, column) {
+    return row >= 0 && row < this.height && column >= 0 && column < this.width;
+  }
+
+  getCount(row, column) {
+    let count = 0;
+    for (let x = -1; x <= 1; x++) {
+      for (let y = -1; y <= 1; y++) {
+        if (this.isBomb(row + y, column + x)) {
+          count++;
+        }
+      }
+    }
+    return count;
+  }
+
+  i = 1;
+  withdrawalBombs() {
+    console.log('просто функ');
+
+    // let bombesCount = this.bombesCount;
+    console.log(this.bombesCount);
+    if (this.i <= this.bombesCount) {
+      console.log('внутри');
+      this.cells[this.bombs[this.i - 1]].innerHTML = '💣';
+      this.sapperCells[this.bombs[this.i - 1]].classList.add('active');
+      setTimeout(this.withdrawalBombs.bind(this), 300);
+      this.i++;
+    }
+  }
+
+  open(row, column) {
+    if (!this.isValid(row, column)) return;
+
+    const index = row * this.width + column;
+    const cell = this.cells[index];
+    if (this.sapperCells[index].innerHTML === '🚩') {
+      return;
+    }
+    if (cell.disabled === true) {
+      return;
+    }
+
+    if (this.isBomb(row, column)) {
+      cell.innerHTML = '💣';
+      setTimeout(this.withdrawalBombs.bind(this), 300);
+      popup.textContent = '⟳ Попробуй еще раз!';
+      popup.classList.add('popup__lose-game');
+      background.classList.add('darkening');
+
+      return;
+    }
+    this.closedCount--;
+    if (this.closedCount <= this.bombesCount) {
+      popup.textContent = 'Ура! Вы нашли все мины за ## секунд и N ходов!';
+      popup.classList.add('popup__lose-game');
+      background.classList.add('darkening');
+      return;
+    }
+
+    cell.disabled = true;
+    this.addClassOpen(row, column);
+
+    const count = this.getCount(row, column);
+    if (count !== 0) {
+      cell.innerHTML = count;
+      cell.classList.add(`bomb-count-${count}`);
+      return;
+    }
+
+    for (let x = -1; x <= 1; x++) {
+      for (let y = -1; y <= 1; y++) {
+        this.open(row + y, column + x);
+      }
+    }
+  }
+
+  isBomb(row, column) {
+    if (!this.isValid(row, column)) {
+      return false;
+    }
+    const index = row * this.width + column;
+    return this.bombs.includes(index);
   }
 }
 
 const startGame = new StartGame(width, height, bombesCount);
 startGame.createsSapperCells();
+// startGame.addClassOpen(this.row, this.column);
