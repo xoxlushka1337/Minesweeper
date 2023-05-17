@@ -30,13 +30,74 @@ const field = document.querySelector('.sapper__field');
 const bombesCountInput = document.querySelector('.number-bombs__input');
 const flag = document.querySelector('.flag');
 const flagIcon = document.querySelector('.flag__icon');
-const quantityClick = document.querySelector('.qquantity-click__number');
+const quantityClick = document.querySelector('.quantity-click__number');
 
 let width = 10;
 let height = 10;
 let bombesCount = 10;
 
-const startGame = new StartGame();
 class StartGame {
-  constructor(width, height, bombesCount) {}
+  constructor(width, height, bombesCount) {
+    this.width = width;
+    this.height = height;
+    this.bombesCount = bombesCount;
+    this.numberCells = this.width * this.height;
+  }
+
+  createsSapperCells() {
+    for (let i = 0; i < this.numberCells; i++) {
+      field.innerHTML += `<div class="sapper__cells" ></div>`;
+    }
+
+    const sapperCells = document.querySelectorAll('.sapper__cells');
+    const cells = [...field.children];
+
+    this.closedCount = this.numberCells;
+
+    this.bombs = [];
+
+    this.isFirstClick = true;
+
+    field.addEventListener('click', (event) => {
+      if (event.target.className !== 'sapper__cells') {
+        return;
+      }
+
+      const index = cells.indexOf(event.target);
+      const column = this.index % this.width;
+      const row = Math.floor(this.index / this.width);
+
+      // quantityClick += 1;
+
+      if (isFlagClicked) {
+        const index = row * width + column;
+        flagIndex.push(index);
+        sapperCells[index].textContent = '🚩';
+        numberFlag--;
+        isFlagClicked = false;
+        flagNumber.innerHTML = numberFlag;
+
+        return;
+      }
+
+      if (isFirstClick) {
+        isFirstClick = false;
+        bombs = [...Array(numberCells).keys()]
+          .sort(() => Math.random() - 0.5)
+          .filter((cell) => cell !== index)
+          .slice(0, bombesCount);
+      }
+      if (sapperCells[index].innerHTML === '🚩') {
+        numberFlag++;
+        flagNumber.innerHTML = numberFlag;
+        sapperCells[index].innerHTML = '';
+      }
+
+      open(row, column);
+      addClassOpen(row, column);
+    });
+  }
 }
+
+const startGame = new StartGame(width, height, bombesCount);
+startGame.createsSapperCells();
