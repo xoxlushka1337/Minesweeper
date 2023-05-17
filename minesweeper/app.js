@@ -124,12 +124,7 @@ class StartGame {
 
   i = 1;
   withdrawalBombs() {
-    console.log('просто функ');
-
-    // let bombesCount = this.bombesCount;
-    console.log(this.bombesCount);
     if (this.i <= this.bombesCount) {
-      console.log('внутри');
       this.cells[this.bombs[this.i - 1]].innerHTML = '💣';
       this.sapperCells[this.bombs[this.i - 1]].classList.add('active');
       setTimeout(this.withdrawalBombs.bind(this), 300);
@@ -142,9 +137,9 @@ class StartGame {
 
     const index = row * this.width + column;
     const cell = this.cells[index];
-    if (this.sapperCells[index].innerHTML === '🚩') {
-      return;
-    }
+    // if (this.sapperCells[index].innerHTML === '🚩') {
+    //   return;
+    // }
     if (cell.disabled === true) {
       return;
     }
@@ -190,8 +185,20 @@ class StartGame {
     const index = row * this.width + column;
     return this.bombs.includes(index);
   }
+
+  appearancePopup() {
+    popup.addEventListener('click', (event) => {
+      popup.classList.remove('popup__lose-game');
+      background.classList.remove('darkening');
+      this.i = 1;
+      field.innerHTML = '';
+      // flagNumber.innerHTML = bombesCount;
+      this.createsSapperCells();
+    });
+  }
 }
 
 const startGame = new StartGame(width, height, bombesCount);
 startGame.createsSapperCells();
+startGame.appearancePopup();
 // startGame.addClassOpen(this.row, this.column);
