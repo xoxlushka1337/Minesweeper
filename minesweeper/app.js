@@ -36,9 +36,35 @@ let width = 10;
 let height = 10;
 let bombesCount = 10;
 
+class FlagGenerator {
+  constructor(bombesCount, bombGenerator) {
+    this.bombesCount = bombesCount;
+    this.bombGenerator = bombGenerator;
+  }
+
+  flagging() {
+    this.bombesCount = bombesCount;
+
+    this.isFlagClicked = false;
+    // let flagIndex = [];
+    this.numberFlag = bombesCount;
+
+    flag.innerHTML = `<div class="flag__icon">🚩</div><div class="flag__number">${this.numberFlag}</div>`;
+    document.addEventListener('click', (e) => {
+      if (e.target.className === 'flag__icon') {
+        this.isFlagClicked = true;
+      }
+    });
+  }
+}
+const flagGenerator = new FlagGenerator(bombesCount);
+flagGenerator.flagging();
+const flagNumber = document.querySelector('.flag__number');
+
 class BombGenerator {
   constructor(bombesCount) {
     this.bombesCount = bombesCount;
+    this.flagGenerator = flagGenerator;
   }
   numberOfBombs() {
     document.addEventListener('keyup', (event) => {
@@ -47,23 +73,21 @@ class BombGenerator {
         this.bombesCount = bombesCountInput.value;
         if (this.bombesCount > 90) {
           this.bombesCount = 90;
-          this.bombesCountInput.value = 90;
+          bombesCountInput.value = 90;
         }
         if (this.bombesCount < 10) {
           this.bombesCount = 10;
           bombesCountInput.value = 10;
         }
-        // flagging(bombesCount);
-        // flagNumber.innerHTML = bombesCount;
+        // flagGenerator.flagging();
+        this.flagGenerator.numberFlag = this.bombesCount;
+        flagNumber.innerHTML = this.bombesCount;
         startGame.createsSapperCells(this.bombesCount);
         // startGame(width, height, bombesCount);
       }
     });
   }
 }
-
-const bombGenerator = new BombGenerator(bombesCount);
-bombGenerator.numberOfBombs();
 
 class DetermineFieldSize {
   constructor(width, height, bombesCount) {
@@ -117,19 +141,27 @@ class DetermineFieldSize {
   }
 }
 
-const determineFieldSize = new DetermineFieldSize(width, height, bombesCount);
-determineFieldSize.fieldLevel();
-
 class StartGame {
-  constructor(width, height, bombesCount) {
+  constructor(
+    width,
+    height,
+    bombesCount,
+    determineFieldSize,
+    bombGenerator,
+    flagGenerator
+  ) {
     this.width = width;
     this.height = height;
     this.bombesCount = bombesCount;
+    this.determineFieldSize = determineFieldSize;
+    this.bombGenerator = bombGenerator;
+    this.flagGenerator = flagGenerator;
   }
 
   createsSapperCells() {
-    this.numberCells = determineFieldSize.width * determineFieldSize.height;
-    this.bombesCount = bombGenerator.bombesCount;
+    this.numberCells =
+      this.determineFieldSize.width * this.determineFieldSize.height;
+    this.bombesCount = this.bombGenerator.bombesCount;
 
     for (let i = 0; i < this.numberCells; i++) {
       field.innerHTML += `<div class="sapper__cells" ></div>`;
@@ -138,7 +170,7 @@ class StartGame {
     this.sapperCells = document.querySelectorAll('.sapper__cells');
 
     for (let i = 0; i < this.sapperCells.length; i++) {
-      this.sapperCells[i].style.height = determineFieldSize.sizeCell;
+      this.sapperCells[i].style.height = this.determineFieldSize.sizeCell;
     }
 
     this.cells = [...field.children];
@@ -155,18 +187,18 @@ class StartGame {
       }
 
       this.index = this.cells.indexOf(event.target);
-      this.column = this.index % determineFieldSize.width;
-      this.row = Math.floor(this.index / determineFieldSize.width);
+      this.column = this.index % this.determineFieldSize.width;
+      this.row = Math.floor(this.index / this.determineFieldSize.width);
 
       // quantityClick += 1;
 
-      if (this.isFlagClicked) {
-        const index = this.row * determineFieldSize.width + this.column;
-        flagIndex.push(index);
+      if (this.flagGenerator.isFlagClicked) {
+        const index = this.row * this.determineFieldSize.width + this.column;
+        // flagIndex.push(index);
         this.sapperCells[index].textContent = '🚩';
-        numberFlag--;
-        isFlagClicked = false;
-        flagNumber.innerHTML = numberFlag;
+        this.flagGenerator.numberFlag--;
+        this.flagGenerator.isFlagClicked = false;
+        flagNumber.innerHTML = this.flagGenerator.numberFlag;
 
         return;
       }
@@ -179,8 +211,8 @@ class StartGame {
           .slice(0, this.bombesCount);
       }
       if (this.sapperCells[this.index].innerHTML === '🚩') {
-        numberFlag++;
-        flagNumber.innerHTML = numberFlag;
+        this.flagGenerator.numberFlag++;
+        flagNumber.innerHTML = this.flagGenerator.numberFlag;
         this.sapperCells[this.index].innerHTML = '';
       }
 
@@ -190,7 +222,7 @@ class StartGame {
   }
 
   addClassOpen(row, column) {
-    const index = row * determineFieldSize.width + column;
+    const index = row * this.determineFieldSize.width + column;
     if (this.sapperCells[index].innerHTML === '🚩') {
       return;
     }
@@ -200,9 +232,9 @@ class StartGame {
   isValid(row, column) {
     return (
       row >= 0 &&
-      row < determineFieldSize.height &&
+      row < this.determineFieldSize.height &&
       column >= 0 &&
-      column < determineFieldSize.width
+      column < this.determineFieldSize.width
     );
   }
 
@@ -231,11 +263,11 @@ class StartGame {
   open(row, column) {
     if (!this.isValid(row, column)) return;
 
-    const index = row * determineFieldSize.width + column;
+    const index = row * this.determineFieldSize.width + column;
     const cell = this.cells[index];
-    // if (this.sapperCells[index].innerHTML === '🚩') {
-    //   return;
-    // }
+    if (this.sapperCells[index].innerHTML === '🚩') {
+      return;
+    }
     if (cell.disabled === true) {
       return;
     }
@@ -278,7 +310,7 @@ class StartGame {
     if (!this.isValid(row, column)) {
       return false;
     }
-    const index = row * determineFieldSize.width + column;
+    const index = row * this.determineFieldSize.width + column;
     return this.bombs.includes(index);
   }
 
@@ -288,14 +320,26 @@ class StartGame {
       background.classList.remove('darkening');
       this.i = 1;
       field.innerHTML = '';
-      // flagNumber.innerHTML = bombesCount;
+      flagNumber.innerHTML = this.bombesCount;
 
       this.createsSapperCells();
     });
   }
 }
 
-const startGame = new StartGame(width, height, bombesCount);
+const bombGenerator = new BombGenerator(bombesCount, flagGenerator);
+bombGenerator.numberOfBombs();
+const determineFieldSize = new DetermineFieldSize(width, height, bombesCount);
+determineFieldSize.fieldLevel();
+const startGame = new StartGame(
+  width,
+  height,
+  bombesCount,
+  determineFieldSize,
+  bombGenerator,
+  flagGenerator
+);
 startGame.createsSapperCells();
 startGame.appearancePopup();
+
 // startGame.addClassOpen(this.row, this.column);
