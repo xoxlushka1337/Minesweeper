@@ -36,6 +36,15 @@ let width = 10;
 let height = 10;
 let bombesCount = 10;
 
+const soundExplosion = new Audio('./music/взрыв2.mp3');
+const soundChoose = new Audio('./music/выбор.mp3');
+const soundClickCell = new Audio('./music/кил2.mp3');
+const soundClick = new Audio('./music/клик.mp3');
+const soundVictories = new Audio('./music/победа.mp3');
+const soundFlag = new Audio('./music/поставил-флаг.mp3');
+soundFlag.volume = 0.5;
+soundClickCell.volume = 0.5;
+
 class FlagGenerator {
   constructor(bombesCount, bombGenerator) {
     this.bombesCount = bombesCount;
@@ -53,6 +62,7 @@ class FlagGenerator {
     document.addEventListener('click', (e) => {
       if (e.target.className === 'flag__icon') {
         this.isFlagClicked = true;
+        soundClick.play();
       }
     });
   }
@@ -100,6 +110,7 @@ class DetermineFieldSize {
     this.sizeCell = '';
 
     fieldSize.addEventListener('click', () => {
+      soundClick.play();
       let value = fieldSize.value;
       if (value === 'Простой') {
         this.width = 10;
@@ -197,11 +208,13 @@ class StartGame {
         // flagIndex.push(index);
         this.sapperCells[index].textContent = '🚩';
         this.flagGenerator.numberFlag--;
+        soundFlag.play();
         this.flagGenerator.isFlagClicked = false;
         flagNumber.innerHTML = this.flagGenerator.numberFlag;
 
         return;
       }
+      soundClickCell.play();
 
       if (this.isFirstClick) {
         this.isFirstClick = false;
@@ -212,6 +225,7 @@ class StartGame {
       }
       if (this.sapperCells[this.index].innerHTML === '🚩') {
         this.flagGenerator.numberFlag++;
+        // soundFlag.play();
         flagNumber.innerHTML = this.flagGenerator.numberFlag;
         this.sapperCells[this.index].innerHTML = '';
       }
@@ -254,7 +268,9 @@ class StartGame {
   withdrawalBombs() {
     if (this.i <= this.bombesCount) {
       this.cells[this.bombs[this.i - 1]].innerHTML = '💣';
+      soundClickCell.pause();
       this.sapperCells[this.bombs[this.i - 1]].classList.add('active');
+      soundExplosion.play();
       setTimeout(this.withdrawalBombs.bind(this), 300);
       this.i++;
     }
@@ -274,6 +290,8 @@ class StartGame {
 
     if (this.isBomb(row, column)) {
       cell.innerHTML = '💣';
+      // soundClickCell.pause();
+      soundExplosion.play();
       setTimeout(this.withdrawalBombs.bind(this), 300);
       popup.textContent = '⟳ Попробуй еще раз!';
       popup.classList.add('popup__lose-game');
@@ -283,6 +301,7 @@ class StartGame {
     }
     this.closedCount--;
     if (this.closedCount <= this.bombesCount) {
+      soundVictories.play();
       popup.textContent = 'Ура! Вы нашли все мины за ## секунд и N ходов!';
       popup.classList.add('popup__lose-game');
       background.classList.add('darkening');
@@ -318,6 +337,7 @@ class StartGame {
     popup.addEventListener('click', (event) => {
       popup.classList.remove('popup__lose-game');
       background.classList.remove('darkening');
+      soundClick.play();
       this.i = 1;
       field.innerHTML = '';
       flagNumber.innerHTML = this.bombesCount;
