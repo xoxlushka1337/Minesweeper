@@ -36,20 +36,81 @@ let width = 10;
 let height = 10;
 let bombesCount = 10;
 
+class DetermineFieldSize {
+  constructor(width, height, bombesCount) {
+    this.width = width;
+    this.height = height;
+    this.bombesCount = bombesCount;
+  }
+
+  fieldLevel() {
+    this.sizeCell = '';
+
+    fieldSize.addEventListener('click', () => {
+      let value = fieldSize.value;
+      if (value === 'Простой') {
+        this.width = 10;
+        this.height = 10;
+        field.innerHTML = '';
+        field.style = `grid-template-columns: repeat(10, 40px)`;
+        startGame.createsSapperCells(this.width, this.height);
+        return;
+      }
+      if (value === 'Средний') {
+        this.width = 15;
+        this.height = 15;
+        field.innerHTML = '';
+        field.style = `grid-template-columns: repeat(15, 30px)`;
+        startGame.createsSapperCells(this.width, this.height);
+        const sapperCells = document.querySelectorAll('.sapper__cells');
+        this.sizeCell = '30px';
+        for (let i = 0; i < sapperCells.length; i++) {
+          sapperCells[i].style.height = this.sizeCell;
+        }
+        return;
+      }
+      if (value === 'Сложный') {
+        this.width = 25;
+        this.height = 25;
+        field.innerHTML = '';
+        field.style = `grid-template-columns: repeat(25, 20px)`;
+
+        startGame.createsSapperCells(this.width, this.height);
+        const sapperCells = document.querySelectorAll('.sapper__cells');
+        this.sizeCell = '20px';
+        for (let i = 0; i < sapperCells.length; i++) {
+          sapperCells[i].style.height = this.sizeCell;
+        }
+
+        return;
+      }
+    });
+  }
+}
+
+const determineFieldSize = new DetermineFieldSize(width, height, bombesCount);
+determineFieldSize.fieldLevel();
+
 class StartGame {
   constructor(width, height, bombesCount) {
     this.width = width;
     this.height = height;
     this.bombesCount = bombesCount;
-    this.numberCells = this.width * this.height;
   }
 
   createsSapperCells() {
+    this.numberCells = determineFieldSize.width * determineFieldSize.height;
+
     for (let i = 0; i < this.numberCells; i++) {
       field.innerHTML += `<div class="sapper__cells" ></div>`;
     }
 
     this.sapperCells = document.querySelectorAll('.sapper__cells');
+
+    for (let i = 0; i < this.sapperCells.length; i++) {
+      this.sapperCells[i].style.height = determineFieldSize.sizeCell;
+    }
+
     this.cells = [...field.children];
 
     this.closedCount = this.numberCells;
@@ -64,13 +125,13 @@ class StartGame {
       }
 
       this.index = this.cells.indexOf(event.target);
-      this.column = this.index % this.width;
-      this.row = Math.floor(this.index / this.width);
+      this.column = this.index % determineFieldSize.width;
+      this.row = Math.floor(this.index / determineFieldSize.width);
 
       // quantityClick += 1;
 
       if (this.isFlagClicked) {
-        const index = this.row * this.width + this.column;
+        const index = this.row * determineFieldSize.width + this.column;
         flagIndex.push(index);
         this.sapperCells[index].textContent = '🚩';
         numberFlag--;
@@ -99,7 +160,7 @@ class StartGame {
   }
 
   addClassOpen(row, column) {
-    const index = row * this.width + column;
+    const index = row * determineFieldSize.width + column;
     if (this.sapperCells[index].innerHTML === '🚩') {
       return;
     }
@@ -107,7 +168,12 @@ class StartGame {
   }
 
   isValid(row, column) {
-    return row >= 0 && row < this.height && column >= 0 && column < this.width;
+    return (
+      row >= 0 &&
+      row < determineFieldSize.height &&
+      column >= 0 &&
+      column < determineFieldSize.width
+    );
   }
 
   getCount(row, column) {
@@ -135,7 +201,7 @@ class StartGame {
   open(row, column) {
     if (!this.isValid(row, column)) return;
 
-    const index = row * this.width + column;
+    const index = row * determineFieldSize.width + column;
     const cell = this.cells[index];
     // if (this.sapperCells[index].innerHTML === '🚩') {
     //   return;
@@ -182,7 +248,7 @@ class StartGame {
     if (!this.isValid(row, column)) {
       return false;
     }
-    const index = row * this.width + column;
+    const index = row * determineFieldSize.width + column;
     return this.bombs.includes(index);
   }
 
@@ -193,6 +259,9 @@ class StartGame {
       this.i = 1;
       field.innerHTML = '';
       // flagNumber.innerHTML = bombesCount;
+      // fieldSize.value = 'Простой';
+      // determineFieldSize.fieldLevel(fieldSize.value);
+
       this.createsSapperCells();
     });
   }
