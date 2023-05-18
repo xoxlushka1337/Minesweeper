@@ -36,6 +36,35 @@ let width = 10;
 let height = 10;
 let bombesCount = 10;
 
+class BombGenerator {
+  constructor(bombesCount) {
+    this.bombesCount = bombesCount;
+  }
+  numberOfBombs() {
+    document.addEventListener('keyup', (event) => {
+      if (event.code === 'Enter') {
+        field.innerHTML = '';
+        this.bombesCount = bombesCountInput.value;
+        if (this.bombesCount > 90) {
+          this.bombesCount = 90;
+          this.bombesCountInput.value = 90;
+        }
+        if (this.bombesCount < 10) {
+          this.bombesCount = 10;
+          bombesCountInput.value = 10;
+        }
+        // flagging(bombesCount);
+        // flagNumber.innerHTML = bombesCount;
+        startGame.createsSapperCells(this.bombesCount);
+        // startGame(width, height, bombesCount);
+      }
+    });
+  }
+}
+
+const bombGenerator = new BombGenerator(bombesCount);
+bombGenerator.numberOfBombs();
+
 class DetermineFieldSize {
   constructor(width, height, bombesCount) {
     this.width = width;
@@ -100,6 +129,7 @@ class StartGame {
 
   createsSapperCells() {
     this.numberCells = determineFieldSize.width * determineFieldSize.height;
+    this.bombesCount = bombGenerator.bombesCount;
 
     for (let i = 0; i < this.numberCells; i++) {
       field.innerHTML += `<div class="sapper__cells" ></div>`;
@@ -259,8 +289,6 @@ class StartGame {
       this.i = 1;
       field.innerHTML = '';
       // flagNumber.innerHTML = bombesCount;
-      // fieldSize.value = 'Простой';
-      // determineFieldSize.fieldLevel(fieldSize.value);
 
       this.createsSapperCells();
     });
