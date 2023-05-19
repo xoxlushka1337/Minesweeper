@@ -32,8 +32,8 @@ body {
   padding: 10px 20px;
 }
 .sapper__field {
-  /* max-width: 400px; */
   margin-top: 150px;
+  margin-bottom: 150px;
   display: grid;
   grid-template-columns: repeat(10, 40px);
 }
@@ -140,22 +140,23 @@ body {
   height: 20px;
   width: 50px;
   font-size: 17px;
-  /* padding: 0; */
-}
-
-.flag {
-  display: flex;
-  align-items: center;
 }
 
 .flag__icon {
-  font-size: 35px;
+  font-size: 36px;
   margin: 0 10px 0 20px;
   cursor: pointer;
 }
 
-.flag__number {
+.number-text {
   color: whitesmoke;
   font-size: 25px;
-  text-align: end;
+}
+
+.wrapper {
+  display: flex;
+  align-items: center;
+}
+.stopwatch__icon {
+  width: 59px;
 }

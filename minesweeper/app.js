@@ -11,10 +11,14 @@ body.innerHTML = `
 <div class="number-bombs__text">Введите количество бомб от 10-90:</div>
 <input class="number-bombs__input" type="number" min="10" max="90" value="10">
 </div>
-<div class="flag"></div>
-<img src="./imgs/click.png" alt="404">
-<div class="quantity-clicks">
-<div id="digit" class="quantity-click"><span class="quantity-click__number">0123456789</span></div>
+<div class="flag wrapper"></div>
+<div class="click wrapper">
+<img class="click__icon" src="./imgs/клик.png" alt="404">
+<div class="click__number number-text"></div>
+</div>
+<div class="stopwatch wrapper">
+<img class="stopwatch__icon" src="./imgs/таймер.png" alt="" />
+<div class="stopwatch__time number-text">000</div>
 </div>
 </div>
 <div class="sapper">
@@ -30,7 +34,8 @@ const field = document.querySelector('.sapper__field');
 const bombesCountInput = document.querySelector('.number-bombs__input');
 const flag = document.querySelector('.flag');
 const flagIcon = document.querySelector('.flag__icon');
-const quantityClick = document.querySelector('.quantity-click__number');
+const quantityClick = document.querySelector('.click__number');
+const stopwatchTime = document.querySelector('.stopwatch__time');
 
 let width = 10;
 let height = 10;
@@ -42,8 +47,42 @@ const soundClickCell = new Audio('./music/кил2.mp3');
 const soundClick = new Audio('./music/клик.mp3');
 const soundVictories = new Audio('./music/победа.mp3');
 const soundFlag = new Audio('./music/поставил-флаг.mp3');
+
 soundFlag.volume = 0.5;
 soundClickCell.volume = 0.5;
+
+let milliseconds = 0;
+let seconds = 0;
+let interval;
+class Stopwatch {
+  countingSeconds() {
+    milliseconds++;
+    console.log(milliseconds);
+    if (milliseconds > 99) {
+      seconds++;
+      stopwatchTime.textContent = `00${seconds}`;
+      milliseconds = 0;
+    }
+    if (seconds > 9) {
+      stopwatchTime.textContent = `0${seconds}`;
+    }
+    if (seconds > 99) {
+      stopwatchTime.textContent = `${seconds}`;
+    }
+  }
+}
+
+const stopwatch = new Stopwatch(milliseconds, seconds);
+
+class Clicks {
+  counts() {
+    this.countClick = 0;
+    quantityClick.innerHTML = this.countClick;
+  }
+}
+
+const clicks = new Clicks();
+clicks.counts();
 
 class FlagGenerator {
   constructor(bombesCount, bombGenerator) {
@@ -58,7 +97,7 @@ class FlagGenerator {
     // let flagIndex = [];
     this.numberFlag = bombesCount;
 
-    flag.innerHTML = `<div class="flag__icon">🚩</div><div class="flag__number">${this.numberFlag}</div>`;
+    flag.innerHTML = `<div class="flag__icon">🚩</div><div class="flag__number number-text">${this.numberFlag}</div>`;
     document.addEventListener('click', (e) => {
       if (e.target.className === 'flag__icon') {
         this.isFlagClicked = true;
@@ -116,8 +155,13 @@ class DetermineFieldSize {
         this.width = 10;
         this.height = 10;
         field.innerHTML = '';
-        field.style = `grid-template-columns: repeat(10, 40px)`;
+        this.sizeCell = '40px';
+        this.fontSizeCell = '24px';
+        field.style = `grid-template-columns: repeat(10, ${this.sizeCell})`;
         startGame.createsSapperCells(this.width, this.height);
+        for (let i = 0; i < sapperCells.length; i++) {
+          sapperCells[i].style.height = this.sizeCell;
+        }
         return;
       }
       if (value === 'Средний') {
@@ -128,8 +172,11 @@ class DetermineFieldSize {
         startGame.createsSapperCells(this.width, this.height);
         const sapperCells = document.querySelectorAll('.sapper__cells');
         this.sizeCell = '30px';
+        this.fontSizeCell = '23px';
         for (let i = 0; i < sapperCells.length; i++) {
-          sapperCells[i].style.height = this.sizeCell;
+          sapperCells[
+            i
+          ].style = `height: ${this.sizeCell}; font-size: ${this.fontSizeCell};`;
         }
         return;
       }
@@ -137,13 +184,15 @@ class DetermineFieldSize {
         this.width = 25;
         this.height = 25;
         field.innerHTML = '';
-        field.style = `grid-template-columns: repeat(25, 20px)`;
-
+        this.sizeCell = '25px';
+        this.fontSizeCell = '20px';
+        field.style = `grid-template-columns: repeat(25, ${this.sizeCell})`;
         startGame.createsSapperCells(this.width, this.height);
         const sapperCells = document.querySelectorAll('.sapper__cells');
-        this.sizeCell = '20px';
         for (let i = 0; i < sapperCells.length; i++) {
-          sapperCells[i].style.height = this.sizeCell;
+          sapperCells[
+            i
+          ].style = `height: ${this.sizeCell}; font-size: ${this.fontSizeCell};`;
         }
 
         return;
@@ -159,7 +208,8 @@ class StartGame {
     bombesCount,
     determineFieldSize,
     bombGenerator,
-    flagGenerator
+    flagGenerator,
+    clicks
   ) {
     this.width = width;
     this.height = height;
@@ -167,6 +217,7 @@ class StartGame {
     this.determineFieldSize = determineFieldSize;
     this.bombGenerator = bombGenerator;
     this.flagGenerator = flagGenerator;
+    this.clicks = clicks;
   }
 
   createsSapperCells() {
@@ -181,7 +232,9 @@ class StartGame {
     this.sapperCells = document.querySelectorAll('.sapper__cells');
 
     for (let i = 0; i < this.sapperCells.length; i++) {
-      this.sapperCells[i].style.height = this.determineFieldSize.sizeCell;
+      this.sapperCells[
+        i
+      ].style = `height: ${this.determineFieldSize.sizeCell}; font-size: ${this.determineFieldSize.fontSizeCell};`;
     }
 
     this.cells = [...field.children];
@@ -191,7 +244,8 @@ class StartGame {
     this.bombs = [];
 
     this.isFirstClick = true;
-
+  }
+  clickProcessing() {
     field.addEventListener('click', (event) => {
       if (event.target.className !== 'sapper__cells') {
         return;
@@ -200,8 +254,6 @@ class StartGame {
       this.index = this.cells.indexOf(event.target);
       this.column = this.index % this.determineFieldSize.width;
       this.row = Math.floor(this.index / this.determineFieldSize.width);
-
-      // quantityClick += 1;
 
       if (this.flagGenerator.isFlagClicked) {
         const index = this.row * this.determineFieldSize.width + this.column;
@@ -223,6 +275,17 @@ class StartGame {
           .filter((cell) => cell !== this.index)
           .slice(0, this.bombesCount);
       }
+
+      this.clicks.countClick += 1;
+
+      if (this.clicks.countClick === 1) {
+        clearInterval(interval);
+        interval = setInterval(stopwatch.countingSeconds.bind(this), 10);
+        // stopwatch.countingSeconds();
+      }
+
+      quantityClick.innerHTML = this.clicks.countClick;
+
       if (this.sapperCells[this.index].innerHTML === '🚩') {
         this.flagGenerator.numberFlag++;
         // soundFlag.play();
@@ -293,6 +356,10 @@ class StartGame {
       // soundClickCell.pause();
       soundExplosion.play();
       setTimeout(this.withdrawalBombs.bind(this), 300);
+      clearInterval(interval);
+      milliseconds = 0;
+      seconds = 0;
+      stopwatchTime.innerHTML = '000';
       popup.textContent = '⟳ Попробуй еще раз!';
       popup.classList.add('popup__lose-game');
       background.classList.add('darkening');
@@ -302,7 +369,8 @@ class StartGame {
     this.closedCount--;
     if (this.closedCount <= this.bombesCount) {
       soundVictories.play();
-      popup.textContent = 'Ура! Вы нашли все мины за ## секунд и N ходов!';
+      clearInterval(interval);
+      popup.textContent = `Ура! Вы нашли все мины за ${seconds} секунд и ${this.clicks.countClick} ходов!`;
       popup.classList.add('popup__lose-game');
       background.classList.add('darkening');
       return;
@@ -338,10 +406,15 @@ class StartGame {
       popup.classList.remove('popup__lose-game');
       background.classList.remove('darkening');
       soundClick.play();
+      clearInterval(interval);
+      milliseconds = 0;
+      seconds = 0;
+      stopwatchTime.innerHTML = '000';
       this.i = 1;
       field.innerHTML = '';
       flagNumber.innerHTML = this.bombesCount;
-
+      this.clicks.countClick = 0;
+      quantityClick.innerHTML = this.clicks.countClick;
       this.createsSapperCells();
     });
   }
@@ -357,9 +430,11 @@ const startGame = new StartGame(
   bombesCount,
   determineFieldSize,
   bombGenerator,
-  flagGenerator
+  flagGenerator,
+  clicks
 );
 startGame.createsSapperCells();
+startGame.clickProcessing();
 startGame.appearancePopup();
 
 // startGame.addClassOpen(this.row, this.column);
