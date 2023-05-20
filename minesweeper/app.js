@@ -7,8 +7,8 @@ body.innerHTML = `
   <option value="Средний">Средний</option>
   <option value="Сложный">Сложный</option>
 </select>
-<div class="number-bombs">
-<div class="number-bombs__text">Введите количество бомб от 10-90:</div>
+<div class="number-bombs wrapper">
+<div class="number-bombs__icon">💣</div>
 <input class="number-bombs__input" type="number" min="10" max="90" value="10">
 </div>
 <div class="flag wrapper"></div>
@@ -37,6 +37,19 @@ const flagIcon = document.querySelector('.flag__icon');
 const quantityClick = document.querySelector('.click__number');
 const stopwatchTime = document.querySelector('.stopwatch__time');
 
+const gameState = {
+  openIndex: [],
+  indexBombs: [],
+  indexFlag: [],
+  numberFlag: '',
+  bombesCount: '',
+  countClick: '',
+  width: '',
+  height: '',
+  seconds: '',
+  fieldLevel: '',
+};
+
 let width = 10;
 let height = 10;
 let bombesCount = 10;
@@ -57,9 +70,9 @@ let interval;
 class Stopwatch {
   countingSeconds() {
     milliseconds++;
-    console.log(milliseconds);
     if (milliseconds > 99) {
       seconds++;
+      gameState.seconds = seconds;
       stopwatchTime.textContent = `00${seconds}`;
       milliseconds = 0;
     }
@@ -94,8 +107,8 @@ class FlagGenerator {
     this.bombesCount = bombesCount;
 
     this.isFlagClicked = false;
-    // let flagIndex = [];
     this.numberFlag = bombesCount;
+    gameState.numberFlag = this.numberFlag;
 
     flag.innerHTML = `<div class="flag__icon">🚩</div><div class="flag__number number-text">${this.numberFlag}</div>`;
     document.addEventListener('click', (e) => {
@@ -128,13 +141,13 @@ class BombGenerator {
           this.bombesCount = 10;
           bombesCountInput.value = 10;
         }
-        // flagGenerator.flagging();
         this.flagGenerator.numberFlag = this.bombesCount;
+        gameState.bombesCount = this.bombesCount;
         flagNumber.innerHTML = this.bombesCount;
         startGame.createsSapperCells(this.bombesCount);
-        // startGame(width, height, bombesCount);
       }
     });
+    gameState.bombesCount = this.bombesCount;
   }
 }
 
@@ -151,50 +164,34 @@ class DetermineFieldSize {
     fieldSize.addEventListener('click', () => {
       soundClick.play();
       let value = fieldSize.value;
+      gameState.fieldLevel = value;
       if (value === 'Простой') {
         this.width = 10;
         this.height = 10;
+        gameState.width = this.width;
+        gameState.height = this.height;
         field.innerHTML = '';
-        this.sizeCell = '40px';
-        this.fontSizeCell = '24px';
-        field.style = `grid-template-columns: repeat(10, ${this.sizeCell})`;
+        field.classList.remove('average');
+        field.classList.remove('complicated');
         startGame.createsSapperCells(this.width, this.height);
-        for (let i = 0; i < sapperCells.length; i++) {
-          sapperCells[i].style.height = this.sizeCell;
-        }
         return;
       }
       if (value === 'Средний') {
         this.width = 15;
         this.height = 15;
         field.innerHTML = '';
-        field.style = `grid-template-columns: repeat(15, 30px)`;
+        field.classList.remove('complicated');
+        field.classList.add('average');
         startGame.createsSapperCells(this.width, this.height);
-        const sapperCells = document.querySelectorAll('.sapper__cells');
-        this.sizeCell = '30px';
-        this.fontSizeCell = '23px';
-        for (let i = 0; i < sapperCells.length; i++) {
-          sapperCells[
-            i
-          ].style = `height: ${this.sizeCell}; font-size: ${this.fontSizeCell};`;
-        }
         return;
       }
       if (value === 'Сложный') {
         this.width = 25;
         this.height = 25;
         field.innerHTML = '';
-        this.sizeCell = '25px';
-        this.fontSizeCell = '20px';
-        field.style = `grid-template-columns: repeat(25, ${this.sizeCell})`;
+        field.classList.remove('average');
+        field.classList.add('complicated');
         startGame.createsSapperCells(this.width, this.height);
-        const sapperCells = document.querySelectorAll('.sapper__cells');
-        for (let i = 0; i < sapperCells.length; i++) {
-          sapperCells[
-            i
-          ].style = `height: ${this.sizeCell}; font-size: ${this.fontSizeCell};`;
-        }
-
         return;
       }
     });
@@ -231,12 +228,6 @@ class StartGame {
 
     this.sapperCells = document.querySelectorAll('.sapper__cells');
 
-    for (let i = 0; i < this.sapperCells.length; i++) {
-      this.sapperCells[
-        i
-      ].style = `height: ${this.determineFieldSize.sizeCell}; font-size: ${this.determineFieldSize.fontSizeCell};`;
-    }
-
     this.cells = [...field.children];
 
     this.closedCount = this.numberCells;
@@ -257,9 +248,10 @@ class StartGame {
 
       if (this.flagGenerator.isFlagClicked) {
         const index = this.row * this.determineFieldSize.width + this.column;
-        // flagIndex.push(index);
         this.sapperCells[index].textContent = '🚩';
+        gameState.indexFlag.push(index);
         this.flagGenerator.numberFlag--;
+        gameState.numberFlag = this.flagGenerator.numberFla;
         soundFlag.play();
         this.flagGenerator.isFlagClicked = false;
         flagNumber.innerHTML = this.flagGenerator.numberFlag;
@@ -275,20 +267,19 @@ class StartGame {
           .filter((cell) => cell !== this.index)
           .slice(0, this.bombesCount);
       }
-
+      gameState.indexBombs = [...this.bombs];
       this.clicks.countClick += 1;
-
+      gameState.countClick = this.clicks.countClick;
       if (this.clicks.countClick === 1) {
         clearInterval(interval);
         interval = setInterval(stopwatch.countingSeconds.bind(this), 10);
-        // stopwatch.countingSeconds();
       }
 
       quantityClick.innerHTML = this.clicks.countClick;
 
       if (this.sapperCells[this.index].innerHTML === '🚩') {
         this.flagGenerator.numberFlag++;
-        // soundFlag.play();
+        gameState.numberFlag = this.flagGenerator.numberFlag;
         flagNumber.innerHTML = this.flagGenerator.numberFlag;
         this.sapperCells[this.index].innerHTML = '';
       }
@@ -303,6 +294,7 @@ class StartGame {
     if (this.sapperCells[index].innerHTML === '🚩') {
       return;
     }
+    gameState.openIndex.push(index);
     this.sapperCells[index].classList.add('active');
   }
 
@@ -353,7 +345,6 @@ class StartGame {
 
     if (this.isBomb(row, column)) {
       cell.innerHTML = '💣';
-      // soundClickCell.pause();
       soundExplosion.play();
       setTimeout(this.withdrawalBombs.bind(this), 300);
       clearInterval(interval);
@@ -370,7 +361,22 @@ class StartGame {
     if (this.closedCount <= this.bombesCount) {
       soundVictories.play();
       clearInterval(interval);
-      popup.textContent = `Ура! Вы нашли все мины за ${seconds} секунд и ${this.clicks.countClick} ходов!`;
+      let endingSeconds = 'секунд';
+      let endingMove = 'ходов';
+      if (seconds === 1 || this.clicks.countClick === 1) {
+        endingSeconds = 'секунду';
+        endingMove = 'ход';
+      }
+      if (
+        seconds >= 2 ||
+        seconds <= 4 ||
+        this.clicks.countClick >= 2 ||
+        this.clicks.countClick <= 4
+      ) {
+        endingSeconds = 'секунды';
+        endingMove = 'хода';
+      }
+      popup.textContent = `Ура! Вы нашли все мины за ${seconds} ${endingSeconds} и ${this.clicks.countClick} ${endingMove}!`;
       popup.classList.add('popup__lose-game');
       background.classList.add('darkening');
       return;
@@ -412,6 +418,7 @@ class StartGame {
       stopwatchTime.innerHTML = '000';
       this.i = 1;
       field.innerHTML = '';
+      this.flagGenerator.numberFlag = this.bombesCount;
       flagNumber.innerHTML = this.bombesCount;
       this.clicks.countClick = 0;
       quantityClick.innerHTML = this.clicks.countClick;

@@ -27,15 +27,25 @@ body {
 }
 .header {
   display: flex;
+  justify-content: space-between;
   background-color: rgb(69, 115, 0);
   height: 60px;
-  padding: 10px 20px;
+  padding: 10px 144px;
 }
 .sapper__field {
   margin-top: 150px;
   margin-bottom: 150px;
   display: grid;
   grid-template-columns: repeat(10, 40px);
+}
+.complicated {
+  grid-template-columns: repeat(25, 25px);
+}
+/* .plain {
+  grid-template-columns: repeat(25, 25px);
+} */
+.average {
+  grid-template-columns: repeat(15, 30px);
 }
 .sapper__cells {
   display: flex;
@@ -46,6 +56,18 @@ body {
   background-color: rgb(145, 209, 48);
   border: 0.5px rgb(69, 115, 0) solid;
   cursor: pointer;
+}
+.complicated .sapper__cells {
+  height: 25px;
+  font-size: 20px;
+}
+/* .plain .sapper__cells {
+  height: 25px;
+  font-size: 20px;
+} */
+.average .sapper__cells {
+  height: 30px;
+  font-size: 23px;
 }
 .sapper__cells:hover {
   opacity: 0.5;
@@ -105,20 +127,24 @@ body {
   height: 0;
 }
 .popup__lose-game {
-  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 23px;
   text-align: center;
   opacity: 1;
   color: white;
   padding: 0.5em 2em;
   outline: none;
   z-index: 3;
-  width: 250px;
+  width: 278px;
   height: 60px;
   background-color: rgb(69, 115, 0);
   position: absolute;
   border-radius: 6px;
   box-shadow: -3px 18px 18px 10px rgba(2, 9, 15, 0.2);
-  transition: 0.2s;
+  cursor: pointer;
+  transition: all 0.5s;
 }
 .popup__lose-game:hover {
   background: linear-gradient(#f5ae00, #f59500) #f5ae00;
@@ -127,30 +153,28 @@ body {
   background: linear-gradient(#f59500, #f5ae00) #f59500;
 }
 
-.number-bombs {
-  display: flex;
-  align-items: center;
-}
-.number-bombs__text {
-  font-size: 17px;
-  color: whitesmoke;
-  margin: 0 5px 0 15px;
+.number-bombs__icon {
+  font-size: 36px;
+  /* color: whitesmoke;
+  margin: 0 5px 0 15px; */
 }
 .number-bombs__input {
   height: 20px;
   width: 50px;
   font-size: 17px;
+  margin-left: 5px;
 }
 
 .flag__icon {
   font-size: 36px;
-  margin: 0 10px 0 20px;
+  /* margin: 0 10px 0 20px; */
   cursor: pointer;
 }
 
 .number-text {
   color: whitesmoke;
   font-size: 25px;
+  margin-left: 5px;
 }
 
 .wrapper {
@@ -159,4 +183,64 @@ body {
 }
 .stopwatch__icon {
   width: 59px;
+}
+
+@media (max-width: 657px) {
+  .complicated {
+    grid-template-columns: repeat(25, 20px);
+  }
+  .complicated .sapper__cells {
+    height: 20px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 600px) {
+  .number-bombs__icon {
+    font-size: 30px;
+  }
+  .number-bombs__input {
+    width: 45px;
+  }
+
+  .number-text {
+    font-size: 20px;
+  }
+
+  .click__icon {
+    width: 35px;
+  }
+
+  .stopwatch__icon {
+    width: 40px;
+  }
+  .header {
+    padding: 10px 20px;
+  }
+  .complicated {
+    grid-template-columns: repeat(25, 25px);
+  }
+  .complicated {
+    grid-template-columns: repeat(25, 20px);
+  }
+  .complicated .sapper__cells {
+    height: 20px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .header {
+    padding: 10px 20px;
+  }
+}
+
+@media (max-width: 506px) {
+  .complicated {
+    grid-template-columns: repeat(25, 17px);
+  }
+  .complicated .sapper__cells {
+    height: 17px;
+    font-size: 12px;
+  }
 }
