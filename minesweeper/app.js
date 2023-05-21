@@ -21,21 +21,34 @@ body.innerHTML = `
 <div class="stopwatch__time number-text">000</div>
 </div>
 </div>
-<div class="sapper">
-<div class="sapper__field"></div>
-<div class="popup"></div>
-<div class="background"></div>
-</div>`;
+<main class="main">
+    <div class="wrapper-button">
+      <button class="new-game button">New game</button>
+      <button class="save button">Continue game </button>
+    </div>
+      <div class="sapper">
+        <div class="sapper__field"></div>
+        <div class="sapper__popup"></div>
+        <div class="popup-background"></div>
+      </div>
+      <div class="records-wrapper">
+      <div class="records">
+      <div class="records__title">Victories</div>
+      <div class="records__content"></div>
+      </div>
+      </div>
+    </main>`;
 
-const popup = document.querySelector('.popup');
+const popup = document.querySelector('.sapper__popup');
 const fieldSize = document.querySelector('.field-size');
-const background = document.querySelector('.background');
+const background = document.querySelector('.popup-background');
 const field = document.querySelector('.sapper__field');
 const bombesCountInput = document.querySelector('.number-bombs__input');
 const flag = document.querySelector('.flag');
 const flagIcon = document.querySelector('.flag__icon');
 const quantityClick = document.querySelector('.click__number');
 const stopwatchTime = document.querySelector('.stopwatch__time');
+const recordsContent = document.querySelector('.records__content');
 
 const gameState = {
   openIndex: [],
@@ -50,9 +63,27 @@ const gameState = {
   fieldLevel: '',
 };
 
+let savingWins = [];
+
+if (localStorage.getItem('myKey') !== null) {
+  const returnObj = JSON.parse(`[${localStorage.getItem('myKey')}]`); // спарсим его обратно объект
+  savingWins = [...returnObj];
+}
+
+function renderWins() {
+  recordsContent.innerHTML = '';
+  for (let i = 0; i < savingWins.length; i += 2) {
+    recordsContent.innerHTML += `<div class="records__text">Time: ${
+      savingWins[i]
+    } seconds; Clicks: ${savingWins[i + 1]}</div>`;
+  }
+}
+
+renderWins();
+
 let width = 10;
 let height = 10;
-let bombesCount = 10;
+let bombesCount = 2;
 
 const soundExplosion = new Audio('./music/взрыв2.mp3');
 const soundChoose = new Audio('./music/выбор.mp3');
@@ -222,6 +253,8 @@ class StartGame {
       this.determineFieldSize.width * this.determineFieldSize.height;
     this.bombesCount = this.bombGenerator.bombesCount;
 
+    // recordsContent.innerHTML = `<div class="records__text">${returnObj}</div>`;
+
     for (let i = 0; i < this.numberCells; i++) {
       field.innerHTML += `<div class="sapper__cells" ></div>`;
     }
@@ -358,9 +391,10 @@ class StartGame {
       return;
     }
     this.closedCount--;
-    if (this.closedCount <= this.bombesCount) {
+    if (this.closedCount === this.bombesCount) {
       soundVictories.play();
       clearInterval(interval);
+
       let endingSeconds = 'секунд';
       let endingMove = 'ходов';
       if (seconds === 1 || this.clicks.countClick === 1) {
@@ -376,6 +410,19 @@ class StartGame {
         endingSeconds = 'секунды';
         endingMove = 'хода';
       }
+
+      if (localStorage.getItem('myKey') !== null) {
+        savingWins = [];
+        const returnObj = JSON.parse(`[${localStorage.getItem('myKey')}]`); // спарсим его обратно объект
+        savingWins = [...returnObj];
+        if (savingWins.length === 20) {
+          savingWins.splice(0, 2);
+        }
+      }
+
+      savingWins.push(seconds, this.clicks.countClick);
+      localStorage.setItem('myKey', savingWins); // запишем его в хранилище по ключу "myKey"
+      renderWins();
       popup.textContent = `Ура! Вы нашли все мины за ${seconds} ${endingSeconds} и ${this.clicks.countClick} ${endingMove}!`;
       popup.classList.add('popup__lose-game');
       background.classList.add('darkening');

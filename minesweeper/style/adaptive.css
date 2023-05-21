@@ -1,0 +1,59 @@
+@media (max-width: 657px) {
+  .complicated {
+    grid-template-columns: repeat(25, 20px);
+  }
+  .complicated .sapper__cells {
+    height: 20px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 600px) {
+  .number-bombs__icon {
+    font-size: 30px;
+  }
+  .number-bombs__input {
+    width: 45px;
+  }
+
+  .number-text {
+    font-size: 20px;
+  }
+
+  .click__icon {
+    width: 35px;
+  }
+
+  .stopwatch__icon {
+    width: 40px;
+  }
+  .header {
+    padding: 10px 20px;
+  }
+  .complicated {
+    grid-template-columns: repeat(25, 25px);
+  }
+  .complicated {
+    grid-template-columns: repeat(25, 20px);
+  }
+  .complicated .sapper__cells {
+    height: 20px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .header {
+    padding: 10px 20px;
+  }
+}
+
+@media (max-width: 506px) {
+  .complicated {
+    grid-template-columns: repeat(25, 17px);
+  }
+  .complicated .sapper__cells {
+    height: 17px;
+    font-size: 12px;
+  }
+}
