@@ -50,12 +50,12 @@ const quantityClick = document.querySelector('.click__number');
 const stopwatchTime = document.querySelector('.stopwatch__time');
 const recordsContent = document.querySelector('.records__content');
 
-const gameState = {
+let gameState = {
   openIndex: [],
   indexBombs: [],
   indexFlag: [],
   numberFlag: '',
-  bombesCount: '',
+  bombesCount: 10,
   countClick: '',
   width: '',
   height: '',
@@ -63,6 +63,21 @@ const gameState = {
   fieldLevel: '',
 };
 
+if (localStorage.getItem('gameState') !== null) {
+  // localStorage.clear('gameState');
+  gameState = JSON.parse(localStorage.getItem('gameState'));
+  console.log(gameState);
+} else {
+  saveGameState();
+}
+
+function saveGameState() {
+  const serialGameState = JSON.stringify(gameState); // сериализуем его в строчку
+  localStorage.setItem('gameState', serialGameState); // запишем его в хранилище по ключу "myKey"
+}
+
+gameState.openIndex = [];
+gameState.indexFlag = [];
 let savingWins = [];
 
 if (localStorage.getItem('myKey') !== null) {
@@ -113,6 +128,7 @@ class Stopwatch {
     if (seconds > 99) {
       stopwatchTime.textContent = `${seconds}`;
     }
+    saveGameState();
   }
 }
 
@@ -177,8 +193,10 @@ class BombGenerator {
         flagNumber.innerHTML = this.bombesCount;
         startGame.createsSapperCells(this.bombesCount);
       }
+      saveGameState();
     });
     gameState.bombesCount = this.bombesCount;
+    saveGameState();
   }
 }
 
@@ -191,16 +209,15 @@ class DetermineFieldSize {
 
   fieldLevel() {
     this.sizeCell = '';
-
+    gameState.fieldLevel = 'Простой';
     fieldSize.addEventListener('click', () => {
       soundClick.play();
       let value = fieldSize.value;
       gameState.fieldLevel = value;
+      saveGameState();
       if (value === 'Простой') {
         this.width = 10;
         this.height = 10;
-        gameState.width = this.width;
-        gameState.height = this.height;
         field.innerHTML = '';
         field.classList.remove('average');
         field.classList.remove('complicated');
@@ -249,11 +266,15 @@ class StartGame {
   }
 
   createsSapperCells() {
+    // if (localStorage.getItem('gameState') !== null) {
+
+    // }
     this.numberCells =
       this.determineFieldSize.width * this.determineFieldSize.height;
     this.bombesCount = this.bombGenerator.bombesCount;
 
-    // recordsContent.innerHTML = `<div class="records__text">${returnObj}</div>`;
+    gameState.width = this.determineFieldSize.width;
+    gameState.height = this.determineFieldSize.height;
 
     for (let i = 0; i < this.numberCells; i++) {
       field.innerHTML += `<div class="sapper__cells" ></div>`;
@@ -283,6 +304,7 @@ class StartGame {
         const index = this.row * this.determineFieldSize.width + this.column;
         this.sapperCells[index].textContent = '🚩';
         gameState.indexFlag.push(index);
+        saveGameState();
         this.flagGenerator.numberFlag--;
         gameState.numberFlag = this.flagGenerator.numberFla;
         soundFlag.play();
@@ -311,6 +333,7 @@ class StartGame {
       quantityClick.innerHTML = this.clicks.countClick;
 
       if (this.sapperCells[this.index].innerHTML === '🚩') {
+        gameState.indexFlag = [];
         this.flagGenerator.numberFlag++;
         gameState.numberFlag = this.flagGenerator.numberFlag;
         flagNumber.innerHTML = this.flagGenerator.numberFlag;
@@ -319,6 +342,8 @@ class StartGame {
 
       this.open(this.row, this.column);
       this.addClassOpen(this.row, this.column);
+
+      saveGameState();
     });
   }
 
@@ -327,7 +352,6 @@ class StartGame {
     if (this.sapperCells[index].innerHTML === '🚩') {
       return;
     }
-    gameState.openIndex.push(index);
     this.sapperCells[index].classList.add('active');
   }
 
@@ -430,6 +454,7 @@ class StartGame {
     }
 
     cell.disabled = true;
+    gameState.openIndex.push(index);
     this.addClassOpen(row, column);
 
     const count = this.getCount(row, column);
@@ -465,6 +490,8 @@ class StartGame {
       stopwatchTime.innerHTML = '000';
       this.i = 1;
       field.innerHTML = '';
+      gameState.openIndex = [];
+      gameState.indexFlag = [];
       this.flagGenerator.numberFlag = this.bombesCount;
       flagNumber.innerHTML = this.bombesCount;
       this.clicks.countClick = 0;
@@ -491,4 +518,5 @@ startGame.createsSapperCells();
 startGame.clickProcessing();
 startGame.appearancePopup();
 
+// console.log(gameState);
 // startGame.addClassOpen(this.row, this.column);

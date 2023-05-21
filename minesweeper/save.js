@@ -1,13 +1,8 @@
-// const returnObj = JSON.parse(localStorage.getItem('myKey')); // спарсим его обратно объект
+// gameState = JSON.parse(localStorage.getItem('gameState')); // спарсим его обратно объект
 
-// if (localStorage.getItem('myKey') !== null) {
-//   console.log('хуй');
+// if (localStorage.getItem('gameState') !== null) {
+//   console.log(gameState);
 // } else {
-//   const serialObj = JSON.stringify(savingWins); // сериализуем его в строчку
-//   localStorage.setItem('myKey', serialObj); // запишем его в хранилище по ключу "myKey"
+//   const serialGameState = JSON.stringify(gameState); // сериализуем его в строчку
+//   localStorage.setItem('gameState', serialGameState); // запишем его в хранилище по ключу "myKey"
 // }
-
-// const serialObj = JSON.stringify(savingWins); // сериализуем его в строчку
-// localStorage.setItem('myKey', serialObj); // запишем его в хранилище по ключу "myKey"
-
-// console.log(savingWins);
