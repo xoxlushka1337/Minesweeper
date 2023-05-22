@@ -54,7 +54,7 @@ function sound() {
     } else {
       soundExplosion.volume = 1;
       soundClickCell.volume = 0.5;
-      soundClick.volume = 1;
+      soundClick.volume = 0.5;
       soundVictories.volume = 1;
       soundFlag.volume = 0.5;
     }

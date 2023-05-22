@@ -103,7 +103,7 @@ renderWins();
 
 let width = 10;
 let height = 10;
-let bombesCount = 2;
+let bombesCount = 10;
 
 const soundExplosion = new Audio('./music/взрыв2.mp3');
 const soundClickCell = new Audio('./music/кил2.mp3');
@@ -113,6 +113,7 @@ const soundFlag = new Audio('./music/поставил-флаг.mp3');
 
 soundFlag.volume = 0.5;
 soundClickCell.volume = 0.5;
+soundClick.volume = 0.5;
 
 let milliseconds = 0;
 let seconds = 0;
@@ -182,6 +183,7 @@ class BombGenerator {
   numberOfBombs() {
     document.addEventListener('keyup', (event) => {
       if (event.code === 'Enter') {
+        soundClick.play();
         field.innerHTML = '';
         this.bombesCount = bombesCountInput.value;
         if (this.bombesCount > 90) {

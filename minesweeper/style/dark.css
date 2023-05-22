@@ -69,7 +69,31 @@ body {
 .sapper__cells:hover {
   opacity: 0.5;
 }
+
 .bomb-count-1 {
+  color: rgb(22, 129, 236);
+}
+.bomb-count-2 {
+  color: green;
+}
+.bomb-count-3 {
+  color: rgb(223, 10, 10);
+}
+.bomb-count-4 {
+  color: rgb(22, 22, 211);
+}
+.bomb-count-5 {
+  color: #735938;
+}
+.bomb-count-6 {
+  color: rgb(26, 224, 214);
+}
+
+.bomb-count-8 {
+  color: white;
+}
+
+/* .bomb-count-1 {
   color: rgb(30, 81, 132);
 }
 .bomb-count-2 {
@@ -90,7 +114,7 @@ body {
 
 .bomb-count-8 {
   color: white;
-}
+} */
 
 .active {
   background-color: #382d21;
