@@ -166,8 +166,11 @@ body {
 
 .flag__icon {
   font-size: 36px;
-  /* margin: 0 10px 0 20px; */
   cursor: pointer;
+  transition: 0.5s;
+}
+.flag__icon:hover {
+  transform: scale(1.1);
 }
 
 .number-text {
@@ -188,6 +191,14 @@ body {
   height: 40px;
   align-self: center;
   cursor: pointer;
+  transition: 0.5s;
+}
+
+.sound__icon:hover {
+  transform: scale(1.1);
+}
+.sound {
+  opacity: 0.5;
 }
 .main {
   display: flex;

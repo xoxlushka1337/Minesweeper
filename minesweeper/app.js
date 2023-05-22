@@ -106,7 +106,6 @@ let height = 10;
 let bombesCount = 2;
 
 const soundExplosion = new Audio('./music/взрыв2.mp3');
-const soundChoose = new Audio('./music/выбор.mp3');
 const soundClickCell = new Audio('./music/кил2.mp3');
 const soundClick = new Audio('./music/клик.mp3');
 const soundVictories = new Audio('./music/победа.mp3');

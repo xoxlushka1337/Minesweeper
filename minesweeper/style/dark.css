@@ -153,7 +153,7 @@ body {
 
 .number-bombs__icon {
   font-size: 36px;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 .number-bombs__input {
   height: 20px;
@@ -168,6 +168,10 @@ body {
 .flag__icon {
   font-size: 36px;
   cursor: pointer;
+  transition: 0.5s;
+}
+.flag__icon:hover {
+  transform: scale(1.1);
 }
 
 .number-text {
@@ -243,9 +247,18 @@ body {
   /* color: black; */
   border-radius: 10px;
 }
+
 .sound__icon {
   width: 40px;
   height: 40px;
+  opacity: 0.7;
   align-self: center;
   cursor: pointer;
+  transition: 0.5s;
+}
+.sound {
+  opacity: 0.4;
+}
+.sound__icon:hover {
+  transform: scale(1.1);
 }
