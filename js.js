@@ -20,16 +20,11 @@ body.innerHTML = `
 <img class="stopwatch__icon" src="./imgs/таймер.png" alt="" />
 <div class="stopwatch__time number-text">000</div>
 </div>
-<img class="sound__icon" src="./imgs/звук2.png" alt="">
 </div>
 <main class="main">
     <div class="wrapper-button">
-    <label class="switch">
-    <input class="switch__checkbox" type="checkbox">
-    <span class="slider round"></span>
-  </label>
       <button class="new-game button">New game</button>
-      <button class="save button">Save the game</button>
+      <button class="save button">Continue game </button>
     </div>
       <div class="sapper">
         <div class="sapper__field"></div>
@@ -213,20 +208,35 @@ class DetermineFieldSize {
   }
 
   fieldLevel() {
-    this.sizeCell = '';
     gameState.fieldLevel = 'Простой';
     fieldSize.addEventListener('click', () => {
       soundClick.play();
+      // let value;
+      // if (localStorage.getItem('gameState') !== null) {
+      //   value = gameState.fieldLevel;
+      // } else {
+      //   value = fieldSize.value;
+      //   saveGameState();
+      // }
       let value = fieldSize.value;
-      gameState.fieldLevel = value;
-      saveGameState();
+      // gameState.fieldLevel = value;
+      // saveGameState();
       if (value === 'Простой') {
         this.width = 10;
         this.height = 10;
         field.innerHTML = '';
         field.classList.remove('average');
         field.classList.remove('complicated');
+        gameState.width = this.width;
+        gameState.height = this.height;
+        gameState.fieldLevel = value;
+        saveGameState();
         startGame.createsSapperCells(this.width, this.height);
+        // if (localStorage.getItem('gameState') !== null) {
+        //   startGame.createsSapperCells(gameState.width, gameState.height);
+        // } else {
+        //   startGame.createsSapperCells(this.width, this.height);
+        // }
         return;
       }
       if (value === 'Средний') {
@@ -235,7 +245,15 @@ class DetermineFieldSize {
         field.innerHTML = '';
         field.classList.remove('complicated');
         field.classList.add('average');
+        gameState.width = this.width;
+        gameState.height = this.height;
+        gameState.fieldLevel = value;
+        saveGameState();
+        // if (localStorage.getItem('gameState') !== null) {
+        //   startGame.createsSapperCells(gameState.width, gameState.height);
+        // } else {
         startGame.createsSapperCells(this.width, this.height);
+        // }
         return;
       }
       if (value === 'Сложный') {
@@ -244,6 +262,15 @@ class DetermineFieldSize {
         field.innerHTML = '';
         field.classList.remove('average');
         field.classList.add('complicated');
+        gameState.width = this.width;
+        gameState.height = this.height;
+        gameState.fieldLevel = value;
+        saveGameState();
+        // if (localStorage.getItem('gameState') !== null) {
+        //   startGame.createsSapperCells(gameState.width, gameState.height);
+        // } else {
+        //   startGame.createsSapperCells(this.width, this.height);
+        // }
         startGame.createsSapperCells(this.width, this.height);
         return;
       }
@@ -270,32 +297,45 @@ class StartGame {
     this.clicks = clicks;
   }
 
-  createsSapperCells() {
+  createsSapperCells(width, height) {
+    this.bombs = [];
+
+    this.isFirstClick = true;
+
     // if (localStorage.getItem('gameState') !== null) {
-
-    // }
-    this.numberCells =
-      this.determineFieldSize.width * this.determineFieldSize.height;
+    this.numberCells = width * height;
     this.bombesCount = this.bombGenerator.bombesCount;
-
-    gameState.width = this.determineFieldSize.width;
-    gameState.height = this.determineFieldSize.height;
 
     for (let i = 0; i < this.numberCells; i++) {
       field.innerHTML += `<div class="sapper__cells" ></div>`;
     }
-
+    this.closedCount = this.numberCells;
     this.sapperCells = document.querySelectorAll('.sapper__cells');
-
     this.cells = [...field.children];
+    // } else {
+    // this.numberCells =
+    //   this.determineFieldSize.width * this.determineFieldSize.height;
+    // this.bombesCount = this.bombGenerator.bombesCount;
+
+    // // gameState.width = this.determineFieldSize.width;
+    // // gameState.height = this.determineFieldSize.height;
+
+    // for (let i = 0; i < this.numberCells; i++) {
+    //   field.innerHTML += `<div class="sapper__cells" ></div>`;
+    // }
+
+    // this.sapperCells = document.querySelectorAll('.sapper__cells');
+
+    // this.cells = [...field.children];
 
     this.closedCount = this.numberCells;
-
-    this.bombs = [];
-
-    this.isFirstClick = true;
   }
+  // }
   clickProcessing() {
+    // if (localStorage.getItem('gameState') !== null) {
+    //   const index = row * gameState.width + column;
+
+    // }
     field.addEventListener('click', (event) => {
       if (event.target.className !== 'sapper__cells') {
         return;
@@ -353,6 +393,13 @@ class StartGame {
   }
 
   addClassOpen(row, column) {
+    if (localStorage.getItem('gameState') !== null) {
+      const index = row * gameState.width + column;
+      if (this.sapperCells[index].innerHTML === '🚩') {
+        return;
+      }
+      this.sapperCells[index].classList.add('active');
+    }
     const index = row * this.determineFieldSize.width + column;
     if (this.sapperCells[index].innerHTML === '🚩') {
       return;
@@ -424,6 +471,22 @@ class StartGame {
       soundVictories.play();
       clearInterval(interval);
 
+      let endingSeconds = 'секунд';
+      let endingMove = 'ходов';
+      if (seconds === 1 || this.clicks.countClick === 1) {
+        endingSeconds = 'секунду';
+        endingMove = 'ход';
+      }
+      if (
+        seconds >= 2 ||
+        seconds <= 4 ||
+        this.clicks.countClick >= 2 ||
+        this.clicks.countClick <= 4
+      ) {
+        endingSeconds = 'секунды';
+        endingMove = 'хода';
+      }
+
       if (localStorage.getItem('myKey') !== null) {
         savingWins = [];
         const returnObj = JSON.parse(`[${localStorage.getItem('myKey')}]`); // спарсим его обратно объект
@@ -436,7 +499,7 @@ class StartGame {
       savingWins.push(seconds, this.clicks.countClick);
       localStorage.setItem('myKey', savingWins); // запишем его в хранилище по ключу "myKey"
       renderWins();
-      popup.textContent = `Hooray! You found all mines in ${seconds} seconds and ${this.clicks.countClick} moves!`;
+      popup.textContent = `Ура! Вы нашли все мины за ${seconds} ${endingSeconds} и ${this.clicks.countClick} ${endingMove}!`;
       popup.classList.add('popup__lose-game');
       background.classList.add('darkening');
       return;
@@ -503,9 +566,15 @@ const startGame = new StartGame(
   flagGenerator,
   clicks
 );
-startGame.createsSapperCells();
+// startGame.createsSapperCells();
 startGame.clickProcessing();
 startGame.appearancePopup();
+
+if (localStorage.getItem('gameState') !== null) {
+  startGame.createsSapperCells(gameState.width, gameState.height);
+} else {
+  startGame.createsSapperCells(width, height);
+}
 
 // console.log(gameState);
 // startGame.addClassOpen(this.row, this.column);

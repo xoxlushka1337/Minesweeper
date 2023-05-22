@@ -1,3 +1,24 @@
+/* @media (max-width: 1130px) {
+  .sapper {
+    margin: 40px 0 20px;
+  }
+} */
+
+@media (max-width: 1000px) {
+  .main {
+    flex-direction: column;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    padding: 0 20px 0 20px;
+  }
+  .records-wrapper {
+    align-self: center;
+  }
+  .sapper {
+    margin: 40px 0 20px;
+  }
+}
+
 @media (max-width: 657px) {
   .complicated {
     grid-template-columns: repeat(25, 20px);
@@ -15,7 +36,12 @@
   .number-bombs__input {
     width: 45px;
   }
-
+  .sound__icon {
+    width: 32px;
+    height: 32px;
+    align-self: center;
+    padding-left: 4px;
+  }
   .number-text {
     font-size: 20px;
   }
@@ -42,7 +68,7 @@
   }
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1130px) {
   .header {
     padding: 10px 20px;
   }

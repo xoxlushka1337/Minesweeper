@@ -34,8 +34,6 @@ body {
   box-shadow: 0px 12px 10px 2px rgba(34, 60, 80, 0.2);
 }
 .sapper__field {
-  margin-top: 150px;
-  margin-bottom: 150px;
   display: grid;
   grid-template-columns: repeat(10, 40px);
 }
@@ -131,7 +129,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 23px;
+  font-size: 20px;
   text-align: center;
   opacity: 1;
   color: white;
@@ -185,65 +183,11 @@ body {
 .stopwatch__icon {
   width: 59px;
 }
-
-@media (max-width: 657px) {
-  .complicated {
-    grid-template-columns: repeat(25, 20px);
-  }
-  .complicated .sapper__cells {
-    height: 20px;
-    font-size: 15px;
-  }
-}
-
-@media (max-width: 600px) {
-  .number-bombs__icon {
-    font-size: 30px;
-  }
-  .number-bombs__input {
-    width: 45px;
-  }
-
-  .number-text {
-    font-size: 20px;
-  }
-
-  .click__icon {
-    width: 35px;
-  }
-
-  .stopwatch__icon {
-    width: 40px;
-  }
-  .header {
-    padding: 10px 20px;
-  }
-  .complicated {
-    grid-template-columns: repeat(25, 25px);
-  }
-  .complicated {
-    grid-template-columns: repeat(25, 20px);
-  }
-  .complicated .sapper__cells {
-    height: 20px;
-    font-size: 15px;
-  }
-}
-
-@media (max-width: 1000px) {
-  .header {
-    padding: 10px 20px;
-  }
-}
-
-@media (max-width: 506px) {
-  .complicated {
-    grid-template-columns: repeat(25, 17px);
-  }
-  .complicated .sapper__cells {
-    height: 17px;
-    font-size: 12px;
-  }
+.sound__icon {
+  width: 40px;
+  height: 40px;
+  align-self: center;
+  cursor: pointer;
 }
 .main {
   display: flex;
@@ -257,15 +201,16 @@ body {
   text-align: center;
   width: 205px;
   /* max-height: 354px; */
-  border: 3px rgb(28, 74, 20) solid;
+  border: 3px #77dd77 solid;
+  border-bottom: none;
   border-radius: 5px;
   font-size: 17px;
   color: #062a1d;
-  background-color: #537162;
+  background-color: #d1efb7;
 }
 
 .records__title {
-  border-bottom: 3px rgb(28, 74, 20) solid;
+  border-bottom: 3px #77dd77 solid;
   border-radius: 5px;
   height: 30px;
   display: flex;
@@ -276,7 +221,7 @@ body {
 }
 
 .records__text {
-  border-bottom: 2px rgb(28, 74, 20) solid;
+  border-bottom: 2px #77dd77 solid;
   padding: 6px 0 5px 0;
 }
 
@@ -291,13 +236,18 @@ body {
   padding: 10px 0 10px 0;
   font-size: 17px;
   color: #062a1d;
-  background-color: #537162;
-  border: 3px rgb(28, 74, 20) solid;
+  background-color: #d1efb7;
+  border: 3px #77dd77 solid;
   border-radius: 6px;
   cursor: pointer;
 }
 .button:hover {
-  background-color: rgb(28, 74, 20);
+  background: rgb(119, 221, 119);
+  background: linear-gradient(
+    0deg,
+    rgba(119, 221, 119, 1) 0%,
+    rgba(180, 224, 180, 1) 99%
+  );
   /* color: black; */
   border-radius: 10px;
 }
