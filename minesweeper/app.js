@@ -186,9 +186,9 @@ class BombGenerator {
         soundClick.play();
         field.innerHTML = '';
         this.bombesCount = bombesCountInput.value;
-        if (this.bombesCount > 90) {
-          this.bombesCount = 90;
-          bombesCountInput.value = 90;
+        if (this.bombesCount > 99) {
+          this.bombesCount = 99;
+          bombesCountInput.value = 99;
         }
         if (this.bombesCount < 10) {
           this.bombesCount = 10;
