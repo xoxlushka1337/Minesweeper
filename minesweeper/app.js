@@ -29,7 +29,6 @@ body.innerHTML = `
     <span class="slider round"></span>
   </label>
       <button class="new-game button">New game</button>
-      <button class="save button">Save the game</button>
     </div>
       <div class="sapper">
         <div class="sapper__field"></div>
@@ -272,9 +271,6 @@ class StartGame {
   }
 
   createsSapperCells() {
-    // if (localStorage.getItem('gameState') !== null) {
-
-    // }
     this.numberCells =
       this.determineFieldSize.width * this.determineFieldSize.height;
     this.bombesCount = this.bombGenerator.bombesCount;
